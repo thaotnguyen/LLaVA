@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 from transformers import CLIPVisionModel, CLIPImageProcessor, CLIPVisionConfig
-
+from retfound_integration import RetFoundVisionModel, RetFoundImageProcessor
 
 class CLIPVisionTower(nn.Module):
     def __init__(self, vision_tower, args, delay_load=False):
@@ -26,8 +26,8 @@ class CLIPVisionTower(nn.Module):
             print('{} is already loaded, `load_model` called again, skipping.'.format(self.vision_tower_name))
             return
 
-        self.image_processor = CLIPImageProcessor.from_pretrained(self.vision_tower_name)
-        self.vision_tower = CLIPVisionModel.from_pretrained(self.vision_tower_name, device_map=device_map)
+        self.vision_tower = RetFoundVisionModel(retfound_weights_path="path/to/retfound_mae_weights.pth", projection_dim=768)
+        self.image_processor = RetFoundImageProcessor(image_size=224)
         self.vision_tower.requires_grad_(False)
 
         self.is_loaded = True
